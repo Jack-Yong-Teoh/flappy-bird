@@ -1,2 +1,3 @@
 # flappy-bird.github.io
-Fun Project: Clone of Flappy Bird Game on Web
+Fun Project: Flappy Bird Game on Web Hosted on Github
+https://jack-yong-teoh.github.io/flappy-bird/
