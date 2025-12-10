@@ -3,28 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Flappy Bird Clone</title>
+    <title>Flappy Bird v1.0.1</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
         body {
             margin: 0;
             padding: 0;
             background-color: #333;
-            overflow: hidden; /* Prevent scrolling */
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            touch-action: none; /* Disable default touch actions */
-            -webkit-user-select: none;
+            overflow: hidden;
+            font-family: 'VT323', monospace;
+            touch-action: none;
             user-select: none;
+            -webkit-user-select: none;
         }
 
         #game-container {
             position: relative;
             width: 100vw;
             height: 100vh;
-            background-color: #70c5ce; /* Sky blue */
+            background-color: #333;
             overflow: hidden;
             margin: 0 auto;
-            max-width: 600px; /* Limit width on large screens */
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            max-width: 600px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
         }
 
         canvas {
@@ -44,6 +46,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            z-index: 10;
         }
 
         #flash-overlay {
@@ -62,30 +65,33 @@
         .score-display {
             position: absolute;
             top: 10%;
-            font-size: 60px;
-            font-weight: 900;
+            font-size: 80px;
             color: white;
-            text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;
+            text-shadow: 4px 4px 0 #000;
             z-index: 10;
-            font-family: monospace;
+            font-family: 'VT323', monospace;
+            pointer-events: none;
         }
 
         #start-screen, #game-over-screen {
             pointer-events: auto;
             text-align: center;
+            background: rgba(0, 0, 0, 0.5); 
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(2px);
+            width: 80%;
+            max-width: 320px;
         }
 
-        /* Styling for the Score Board Card */
         .score-card {
-            background-color: #ded895;
-            border: 2px solid #543847;
+            background-color: #eec39a;
+            border: 4px solid #543847;
             border-radius: 10px;
-            padding: 20px;
-            width: 280px;
-            margin: 0 auto;
+            padding: 15px;
+            margin: 15px auto;
             position: relative;
-            box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
-            text-align: left;
+            box-shadow: 6px 6px 0 rgba(0,0,0,0.4);
             display: flex;
             flex-direction: row;
             align-items: center;
@@ -96,90 +102,69 @@
             width: 60px;
             height: 60px;
             background-color: rgba(0,0,0,0.1);
-            border-radius: 30px;
+            border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 30px;
-            border: 2px solid #e86101;
+            font-size: 35px;
+            border: 3px solid #fff;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
         }
 
-        .score-text-group {
-            text-align: right;
-        }
-
-        .score-label {
-            color: #e86101;
-            font-weight: bold;
-            font-size: 14px;
-            text-transform: uppercase;
-            margin-bottom: 2px;
-        }
-
-        .score-value {
-            font-size: 24px;
-            color: white;
-            font-weight: 900;
-            text-shadow: 2px 2px 0 #000;
-            font-family: monospace;
-            margin-bottom: 10px;
-        }
+        .score-text-group { text-align: right; }
+        .score-label { color: #e86101; font-size: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        .score-value { font-size: 30px; color: #fff; text-shadow: 2px 2px 0 #000; }
 
         h1 {
             color: #f4b642;
-            font-size: 50px;
-            margin: 0 0 20px 0;
+            font-size: 60px;
+            margin: 0 0 10px 0;
             text-shadow: 4px 4px 0 #000, -2px -2px 0 #000;
-            font-weight: 900;
-            line-height: 1;
+            line-height: 0.9;
         }
 
         .btn {
-            background-color: #e86101;
+            background: linear-gradient(to bottom, #e86101, #bf4d00);
             color: white;
             border: 2px solid white;
-            padding: 12px 25px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 5px;
+            padding: 12px 30px;
+            font-size: 24px;
+            border-radius: 8px;
             cursor: pointer;
             text-transform: uppercase;
-            margin-top: 20px;
-            transition: transform 0.1s;
-            box-shadow: 0 4px 0 #b34a00;
-            font-family: inherit;
+            margin-top: 10px;
+            box-shadow: 0 5px 0 #8a3800, 0 10px 10px rgba(0,0,0,0.3);
+            font-family: 'VT323', monospace;
+            transition: all 0.1s;
         }
 
         .btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 0 0 #b34a00;
+            transform: translateY(5px);
+            box-shadow: 0 0 0 #8a3800;
         }
 
-        .hidden {
-            display: none !important;
-        }
+        .hidden { display: none !important; }
 
-        /* Power Up UI */
         .power-bar-container {
             position: absolute;
             top: 20px;
             left: 20px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
             z-index: 15;
             pointer-events: none;
         }
 
         .power-bar {
             width: 150px;
-            height: 10px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 5px;
+            height: 12px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 6px;
             overflow: hidden;
             display: none;
-            position: relative;
             border: 2px solid white;
+            box-shadow: 2px 2px 0 #000;
         }
 
         .power-fill {
@@ -187,7 +172,6 @@
             width: 100%;
             transition: width 0.1s linear;
         }
-
     </style>
 </head>
 <body>
@@ -197,10 +181,10 @@
     
     <div class="power-bar-container">
         <div id="bar-invincible" class="power-bar">
-            <div class="power-fill" style="background-color: #ffd700;"></div>
+            <div class="power-fill" style="background: linear-gradient(90deg, #ffd700, #ffaa00);"></div>
         </div>
         <div id="bar-shrink" class="power-bar">
-            <div class="power-fill" style="background-color: #4287f5;"></div>
+            <div class="power-fill" style="background: linear-gradient(90deg, #4287f5, #0051d4);"></div>
         </div>
     </div>
 
@@ -210,17 +194,15 @@
     <div id="ui-layer">
         <div id="start-screen">
             <h1>FLAPPY<br>BIRD</h1>
-            <p style="color:white; font-weight:bold; text-shadow:1px 1px 0 #000;">Collect Stars & Potions!</p>
+            <p style="color:white; font-size: 22px; text-shadow:1px 1px 0 #000;">Collect Stars & Potions!</p>
             <button class="btn" id="start-btn">Start Game</button>
         </div>
 
         <div id="game-over-screen" class="hidden">
-            <h1 style="font-size: 40px; margin-bottom: 15px;">GAME OVER</h1>
+            <h1 style="font-size: 50px; margin-bottom: 10px;">GAME OVER</h1>
             
             <div class="score-card">
-                <div class="medal-container" id="medal-display">
-                    <!-- Medal Emoji Inserted via JS -->
-                </div>
+                <div class="medal-container" id="medal-display"></div>
                 <div class="score-text-group">
                     <div class="score-label">Score</div>
                     <div class="score-value" id="final-score">0</div>
@@ -238,6 +220,15 @@
     // --- Audio System ---
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     const audioCtx = new AudioContext();
+    let audioInitialized = false;
+
+    function initAudio() {
+        if (!audioInitialized && audioCtx.state === 'suspended') {
+            audioCtx.resume().then(() => {
+                audioInitialized = true;
+            });
+        }
+    }
 
     const sounds = {
         jump: () => playTone(350, 'square', 0.1, -12, 0),
@@ -245,12 +236,10 @@
         hit: () => playTone(150, 'sawtooth', 0.05, -5, 0),
         die: () => playTone(100, 'sawtooth', 0.2, -5, 0.1),
         swoosh: () => playTone(600, 'triangle', 0.1, -15, 0),
-        powerup: () => playTone(600, 'sine', 0.3, -10, 0, 'slide') // New sound
+        powerup: () => playTone(600, 'sine', 0.3, -10, 0, 'slide')
     };
 
     function playTone(freq, type, duration, vol, delay, effect) {
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        
         const t = audioCtx.currentTime + delay;
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
@@ -275,9 +264,8 @@
     }
 
     // --- Game Engine ---
-
     const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: false });
     const container = document.getElementById('game-container');
     
     // UI Elements
@@ -290,16 +278,12 @@
     const startBtn = document.getElementById('start-btn');
     const restartBtn = document.getElementById('restart-btn');
     const flashOverlay = document.getElementById('flash-overlay');
-    
-    // Power UI
     const barInvincible = document.getElementById('bar-invincible');
     const barShrink = document.getElementById('bar-shrink');
 
-    // Game Constants
     let frames = 0;
     const DEGREE = Math.PI / 180;
     
-    // Game State
     const state = {
         current: 0,
         getReady: 0,
@@ -314,23 +298,52 @@
         canvas.width = rect.width;
         canvas.height = rect.height;
         scale = canvas.width / 320; 
-        if (scale > 1.4) scale = 1.4;
+        if (scale > 1.5) scale = 1.5;
     }
     
     window.addEventListener('resize', resize);
     resize();
 
+    // --- Core Game Reset Logic ---
+    function resetGameEngine() {
+        state.current = state.getReady;
+        pipes.reset();
+        bird.reset();
+        powerUps.reset();
+        clouds.reset();
+        
+        score.value = 0;
+        scoreHud.innerText = "0";
+        frames = 0;
+        flashOverlay.style.opacity = 0;
+        
+        gameOverScreen.classList.add('hidden');
+        startScreen.classList.remove('hidden');
+        scoreHud.classList.add('hidden');
+        barInvincible.style.display = 'none';
+        barShrink.style.display = 'none';
+        
+        sounds.swoosh();
+    }
+
+    function startGameAction() {
+        initAudio(); 
+        state.current = state.game;
+        scoreHud.classList.remove('hidden');
+        startScreen.classList.add('hidden');
+        bird.flap();
+        sounds.jump();
+    }
+
     function inputAction(e) {
         if(e.type === 'keydown' && e.code !== 'Space') return;
         if(e.type === 'keydown') e.preventDefault(); 
+        
+        initAudio();
 
         switch (state.current) {
             case state.getReady:
-                state.current = state.game;
-                scoreHud.classList.remove('hidden');
-                startScreen.classList.add('hidden');
-                bird.flap();
-                sounds.jump();
+                startGameAction();
                 break;
             case state.game:
                 bird.flap();
@@ -341,32 +354,14 @@
         }
     }
 
-    startBtn.addEventListener('click', () => {
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        state.current = state.game;
-        scoreHud.classList.remove('hidden');
-        startScreen.classList.add('hidden');
-        bird.flap();
-        sounds.jump();
+    startBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        startGameAction();
     });
 
-    restartBtn.addEventListener('click', () => {
-        state.current = state.getReady;
-        gameOverScreen.classList.add('hidden');
-        startScreen.classList.remove('hidden');
-        scoreHud.classList.add('hidden');
-        
-        pipes.reset();
-        bird.reset();
-        powerUps.reset();
-        score.value = 0;
-        frames = 0;
-        flashOverlay.style.opacity = 0;
-        sounds.swoosh();
-        
-        // Hide power bars
-        barInvincible.style.display = 'none';
-        barShrink.style.display = 'none';
+    restartBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        resetGameEngine();
     });
 
     window.addEventListener('keydown', inputAction);
@@ -378,23 +373,102 @@
         if(state.current === state.game) inputAction(e);
     }, {passive: false});
 
-    // --- Game Objects ---
+    // --- Visual Objects ---
 
     const bg = {
+        // COMPLELTY REWRITTEN FOR SMOOTHNESS
         draw: function() {
-            ctx.fillStyle = "#70c5ce";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#fff";
             const w = canvas.width;
-            ctx.fillStyle = "#a3e5ae";
-            const buildingH = 150 * scale;
-            ctx.fillRect(0, canvas.height - buildingH, w, buildingH);
-            ctx.fillStyle = "#95d6a0";
-            for(let i=0; i<w; i+=40*scale) {
-                if(i % 80 == 0) ctx.fillRect(i, canvas.height - buildingH, 20*scale, 40*scale);
+            const h = canvas.height;
+            const groundY = h - (ground.h * scale);
+
+            // 1. Noon Sky (Static)
+            let grad = ctx.createLinearGradient(0, 0, 0, h);
+            grad.addColorStop(0, "#4fc3f7"); 
+            grad.addColorStop(1, "#2980b9");
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, w, h);
+
+            // Calculate scroll position based on frames
+            let scrollSpeed = 0.5 * scale;
+            let totalScroll = (state.current == state.game) ? frames * scrollSpeed : 0;
+
+            // 2. Cityscape Hills (Smooth Scroll using world coordinates)
+            ctx.fillStyle = "#8bc34a"; 
+            ctx.beginPath();
+            ctx.moveTo(0, groundY);
+            // Use a fine step for smooth curves
+            for(let i = 0; i <= w; i += 5 * scale) {
+                let worldX = i + totalScroll * 0.5; // Hills move slower
+                // Shape depends on worldX, so it doesn't morph as it moves
+                let hillY = groundY - 150 * scale - Math.sin(worldX * 0.005) * 30 * scale;
+                ctx.lineTo(i, hillY);
+            }
+            ctx.lineTo(w, groundY);
+            ctx.lineTo(0, groundY);
+            ctx.fill();
+
+            // 3. Buildings (Smooth Scroll with fixed identity)
+            let bStep = 40 * scale; // Wider buildings
+            let bOffset = totalScroll % bStep;
+            
+            ctx.fillStyle = "#aed581"; 
+            // Draw from off-screen left to ensure coverage
+            for(let i = -bOffset - bStep; i < w; i += bStep) {
+                let worldX = i + totalScroll;
+                // Calculate a fixed index for this building block based on world coordinate
+                let bIndex = Math.floor(worldX / bStep);
+
+                // Use the index to create a deterministic, fixed height
+                // The magic numbers generate a pseudo-random fixed pattern
+                let bh = 50 * scale + (Math.abs(Math.sin(bIndex * 123.45)) * 70 * scale);
+                if(bh < 30*scale) bh = 30*scale;
+                let by = groundY - bh;
+                
+                // Draw building body with a small gap
+                ctx.fillRect(i, by, bStep - 5*scale, bh);
+
+                // Static Windows based on deterministic index
+                ctx.fillStyle = "#dcedc8"; 
+                let winRow = 0;
+                for(let wy = by + 8*scale; wy < groundY - 8*scale; wy += 12*scale) {
+                     winRow++;
+                     // Fixed window pattern for this specific building index
+                     if ((bIndex * 13 + winRow * 7) % 4 === 0) {
+                        ctx.fillRect(i + 5*scale, wy, 6*scale, 6*scale);
+                        ctx.fillRect(i + 18*scale, wy, 6*scale, 6*scale);
+                     }
+                }
+                ctx.fillStyle = "#aed581"; // Reset color
             }
         }
     }
+
+    const clouds = {
+        items: [],
+        update: function() {
+            this.items.forEach(c => c.x -= 0.5 * scale);
+            this.items = this.items.filter(c => c.x + c.w > -50);
+            if(frames % 150 === 0) {
+                this.items.push({
+                    x: canvas.width,
+                    y: Math.random() * (canvas.height/2),
+                    w: 60 * scale + Math.random() * 40 * scale
+                });
+            }
+        },
+        draw: function() {
+            ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
+            this.items.forEach(c => {
+                ctx.beginPath();
+                ctx.arc(c.x, c.y, c.w/3, 0, Math.PI * 2);
+                ctx.arc(c.x + c.w/4, c.y - c.w/4, c.w/2.5, 0, Math.PI * 2);
+                ctx.arc(c.x + c.w/2, c.y, c.w/3, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        },
+        reset: function() { this.items = []; }
+    };
 
     const ground = {
         h: 90, 
@@ -405,28 +479,38 @@
             ctx.fillStyle = "#ded895";
             ctx.fillRect(0, y, canvas.width, h);
             
+            ctx.fillStyle = "#d0c874";
+            for(let i=0; i<canvas.width; i+=10*scale) {
+                if(i%3==0) ctx.fillRect(i, y + 10*scale, 4*scale, 4*scale);
+                if(i%7==0) ctx.fillRect(i, y + 30*scale, 4*scale, 4*scale);
+            }
+
             const stripeW = 20 * scale;
             let offset = 0;
             if(state.current == state.game || state.current == state.getReady) {
-                offset = (frames * (2.5 * scale)) % stripeW;
+                offset = (frames * (2.0 * scale)) % stripeW;
             }
             
-            ctx.fillStyle = "#d0c874";
-            for(let i = -1; i < canvas.width / stripeW + 1; i++) {
-                ctx.beginPath();
-                ctx.moveTo(i * stripeW - offset, y);
-                ctx.lineTo((i * stripeW) + (10 * scale) - offset, canvas.height);
-                ctx.lineTo((i * stripeW) - (5 * scale) - offset, canvas.height);
-                ctx.lineTo((i * stripeW) - (15 * scale) - offset, y);
-                ctx.fill();
-            }
+            ctx.fillStyle = "#73bf2e";
+            ctx.fillRect(0, y, canvas.width, 15*scale);
             
             ctx.beginPath();
             ctx.moveTo(0, y);
             ctx.lineTo(canvas.width, y);
             ctx.lineWidth = 3 * scale;
-            ctx.strokeStyle = "#5a9e65";
+            ctx.strokeStyle = "#558c22";
             ctx.stroke();
+            
+            ctx.fillStyle = "#558c22";
+            for(let i = -1; i < canvas.width / stripeW + 1; i++) {
+                let gx = i * stripeW - offset;
+                ctx.beginPath();
+                ctx.moveTo(gx, y);
+                ctx.lineTo(gx + 12*scale, y);
+                ctx.lineTo(gx + 4*scale, y + 15*scale);
+                ctx.lineTo(gx - 8*scale, y + 15*scale);
+                ctx.fill();
+            }
         }
     }
 
@@ -436,82 +520,72 @@
         y: 150,
         speed: 0,
         gravity: 0.18, 
-        jump: 3.6,     
+        jump: 3.6,       
         rotation: 0,
         radius: 12,
         frame: 0,
-        
-        // Power Up State
-        powers: {
-            invincible: 0, // timer
-            shrink: 0      // timer
-        },
+        powers: { invincible: 0, shrink: 0 },
         
         draw: function() {
             let birdX = this.x * scale;
             let birdY = this.y;
             
-            // Handle Shrink Size
             let scaleMult = this.powers.shrink > 0 ? 0.6 : 1.0;
-            let size = this.radius * 2.2 * scale * scaleMult; 
+            let size = this.radius * 2.4 * scale * scaleMult; 
 
             ctx.save();
             ctx.translate(birdX, birdY);
 
-            // Invincible Shield Effect
             if(this.powers.invincible > 0) {
                 ctx.beginPath();
-                ctx.arc(0, 0, size/1.5 + 5, 0, Math.PI*2);
-                ctx.strokeStyle = `rgba(255, 215, 0, ${Math.abs(Math.sin(frames/5)) + 0.5})`;
-                ctx.lineWidth = 3;
+                ctx.arc(0, 0, size/1.5 + 8, 0, Math.PI*2);
+                ctx.strokeStyle = `rgba(255, 215, 0, ${Math.abs(Math.sin(frames/5)) + 0.3})`;
+                ctx.lineWidth = 4;
                 ctx.stroke();
-                
-                // Pulse opacity
-                if(Math.floor(frames/4) % 2 === 0) ctx.globalAlpha = 0.8;
+                ctx.fillStyle = `rgba(255, 255, 200, 0.2)`;
+                ctx.fill();
             }
 
             ctx.rotate(this.rotation);
 
-            // Body
+            let grad = ctx.createRadialGradient(-size/6, -size/6, size/10, 0, 0, size/2);
+            grad.addColorStop(0, "#ffd54f");
+            grad.addColorStop(1, "#f57f17");
+            
             ctx.beginPath();
             ctx.arc(0, 0, size/2, 0, Math.PI*2);
-            ctx.fillStyle = "#f4b642";
+            ctx.fillStyle = grad;
             ctx.fill();
+            
             ctx.lineWidth = 2;
-            ctx.strokeStyle = "#000";
+            ctx.strokeStyle = "#333";
             ctx.stroke();
 
-            // Eye
             ctx.beginPath();
-            ctx.arc(size/4, -size/4, size/4.5, 0, Math.PI*2);
+            ctx.arc(size/4, -size/4, size/3.5, 0, Math.PI*2);
             ctx.fillStyle = "#fff";
             ctx.fill();
             ctx.stroke();
             
-            // Pupil
             ctx.beginPath();
-            ctx.arc(size/3.5, -size/4, size/12, 0, Math.PI*2);
+            ctx.arc(size/3, -size/4, size/10, 0, Math.PI*2);
             ctx.fillStyle = "#000";
             ctx.fill();
 
-            // Wing
             ctx.beginPath();
-            const wingY = (this.animation[this.frame] === 1) ? 0 : (this.animation[this.frame] === 0 ? -3 : 3);
-            ctx.ellipse(-size/10, size/10 + wingY, size/2.5, size/3.5, -0.2, 0, Math.PI*2);
+            const wingY = (this.animation[this.frame] === 1) ? 0 : (this.animation[this.frame] === 0 ? -4 : 4);
+            ctx.ellipse(-size/8, size/8 + wingY, size/2.2, size/3.5, -0.2, 0, Math.PI*2);
             ctx.fillStyle = "#fff";
             ctx.fill();
             ctx.stroke();
 
-            // Beak
             ctx.beginPath();
-            ctx.arc(size/3, size/8, size/5, 0, Math.PI*2);
-            ctx.fillStyle = "#e86101";
+            ctx.arc(size/2.5, size/6, size/4.5, 0, Math.PI*2);
+            ctx.fillStyle = "#ff5722";
             ctx.fill();
             ctx.stroke();
 
             ctx.restore();
-            
-            // Update UI Bars
             this.updateUI();
         },
         
@@ -533,7 +607,6 @@
         
         flap: function() {
             let jumpForce = this.jump;
-            // Slightly smaller jump if shrunk to keep control tight
             if(this.powers.shrink > 0) jumpForce *= 0.85; 
             
             this.speed = -jumpForce * scale;
@@ -541,7 +614,6 @@
         },
         
         update: function() {
-            // Decrement Power Timers
             if (this.powers.invincible > 0) this.powers.invincible--;
             if (this.powers.shrink > 0) this.powers.shrink--;
 
@@ -597,9 +669,8 @@
         }
     }
     
-    // --- Power Up System ---
     const powerUps = {
-        items: [], // {x, y, type} 0=Star, 1=Potion
+        items: [], 
         
         draw: function() {
             for(let i=0; i<this.items.length; i++) {
@@ -610,35 +681,43 @@
                 
                 ctx.save();
                 ctx.translate(px + sz/2, py + sz/2);
-                // Float animation
                 ctx.translate(0, Math.sin(frames/10) * 5); 
                 
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = "white";
+
                 if(p.type === 0) { // Star
-                    // Draw Star
                     ctx.beginPath();
                     for(let j=0; j<5; j++) {
                         ctx.lineTo(Math.cos((18 + j*72)*DEGREE)*sz, -Math.sin((18+j*72)*DEGREE)*sz);
                         ctx.lineTo(Math.cos((54 + j*72)*DEGREE)*sz/2, -Math.sin((54+j*72)*DEGREE)*sz/2);
                     }
                     ctx.closePath();
-                    ctx.fillStyle = "#ffd700";
+                    let grd = ctx.createRadialGradient(0,0,0, 0,0,sz);
+                    grd.addColorStop(0, "white");
+                    grd.addColorStop(1, "#ffd700");
+                    ctx.fillStyle = grd;
                     ctx.fill();
                     ctx.strokeStyle = "#d4af37";
                     ctx.lineWidth = 2;
                     ctx.stroke();
                 } else { // Potion
-                    // Draw Potion
-                    ctx.fillStyle = "#4287f5";
+                    let grd = ctx.createRadialGradient(-sz/4, -sz/4, 2, 0, 0, sz);
+                    grd.addColorStop(0, "#80bfff");
+                    grd.addColorStop(1, "#0066cc");
+                    
+                    ctx.fillStyle = grd;
                     ctx.beginPath();
                     ctx.arc(0, 0, sz/1.5, 0, Math.PI*2);
                     ctx.fill();
+                    
                     ctx.strokeStyle = "white";
                     ctx.lineWidth = 2;
                     ctx.stroke();
-                    // Shine
-                    ctx.fillStyle = "rgba(255,255,255,0.6)";
+                    
+                    ctx.fillStyle = "rgba(255,255,255,0.8)";
                     ctx.beginPath();
-                    ctx.arc(-sz/4, -sz/4, sz/4, 0, Math.PI*2);
+                    ctx.arc(-sz/3, -sz/3, sz/5, 0, Math.PI*2);
                     ctx.fill();
                 }
                 ctx.restore();
@@ -648,14 +727,11 @@
         update: function() {
              if (state.current !== state.game) return;
              
-             // Spawn logic: Random chance when frames align, but simpler to bind to pipes?
-             // Let's spawn randomly in between pipes
-             if(frames % 300 === 150) { // Offset from pipe spawn
-                 if(Math.random() > 0.3) { // 70% chance to spawn powerup
+             if(frames % 300 === 150) { 
+                 if(Math.random() > 0.3) { 
                      const type = Math.random() > 0.5 ? 0 : 1;
-                     // Spawn in playable area
                      const groundY = canvas.height - (ground.h * scale);
-                     const y = Math.random() * (groundY - 100) + 50;
+                     const y = Math.random() * (groundY - 150) + 50;
                      
                      this.items.push({
                          x: canvas.width,
@@ -668,21 +744,18 @@
              
              for(let i=0; i<this.items.length; i++) {
                  let p = this.items[i];
-                 p.x -= pipes.dx * scale; // Move with world
+                 p.x -= pipes.dx * scale; 
                  
-                 // Collision with Bird
                  let birdSz = bird.radius * 2 * scale;
                  let pSz = 30 * scale; 
-                 // Simple rect collision
                  if (bird.x < p.x + pSz && bird.x + birdSz > p.x &&
                      bird.y < p.y + pSz && bird.y + birdSz > p.y) {
                      
-                     // Collect
                      sounds.powerup();
                      if(p.type === 0) {
-                         bird.powers.invincible = 300; // 5 seconds (60fps)
+                         bird.powers.invincible = 300; 
                      } else {
-                         bird.powers.shrink = 480; // 8 seconds
+                         bird.powers.shrink = 480; 
                      }
                      
                      this.items.splice(i, 1);
@@ -704,9 +777,9 @@
 
     const pipes = {
         position: [],
-        w: 52,
-        dx: 2.0,       
-        gap: 125,      
+        w: 52, 
+        dx: 2.0,        
+        gap: 125,        
         
         draw: function() {
             for (let i = 0; i < this.position.length; i++) {
@@ -716,26 +789,40 @@
                 let pX = p.x;
                 let pW = this.w * scale;
                 
-                const pipeColor = "#73bf2e";
-                const pipeBorder = "#558c22";
-
-                // Top Pipe
-                ctx.fillStyle = pipeColor;
-                ctx.fillRect(pX, 0, pW, topY);
-                ctx.strokeStyle = pipeBorder; 
-                ctx.lineWidth = 2;
-                ctx.strokeRect(pX, -2, pW, topY + 2); 
+                // Green Pipe Gradient
+                let pipeGrad = ctx.createLinearGradient(pX, 0, pX + pW, 0);
+                pipeGrad.addColorStop(0, "#2e7d32");   // Dark edge
+                pipeGrad.addColorStop(0.2, "#43a047"); // Main green
+                pipeGrad.addColorStop(0.5, "#81c784"); // Highlight
+                pipeGrad.addColorStop(0.8, "#43a047"); // Main green
+                pipeGrad.addColorStop(1, "#1b5e20");   // Shadow edge
                 
-                ctx.fillRect(pX - 3, topY - 20 * scale, pW + 6, 20 * scale);
-                ctx.strokeRect(pX - 3, topY - 20 * scale, pW + 6, 20 * scale);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = "#000";
 
-                // Bottom Pipe
-                ctx.fillStyle = pipeColor;
-                ctx.fillRect(pX, bottomY, pW, canvas.height - bottomY - (ground.h * scale)); 
-                ctx.strokeRect(pX, bottomY, pW, canvas.height - bottomY - (ground.h * scale));
+                // --- TOP PIPE ---
+                let topCapH = 24 * scale;
+                // Body
+                ctx.fillStyle = pipeGrad;
+                ctx.fillRect(pX, 0, pW, topY - topCapH);
+                ctx.strokeRect(pX, -2, pW, topY - topCapH + 2);
+                // Cap
+                let topCapY = topY - topCapH;
+                ctx.fillRect(pX - 2*scale, topCapY, pW + 4*scale, topCapH);
+                ctx.strokeRect(pX - 2*scale, topCapY, pW + 4*scale, topCapH);
 
-                ctx.fillRect(pX - 3, bottomY, pW + 6, 20 * scale);
-                ctx.strokeRect(pX - 3, bottomY, pW + 6, 20 * scale);
+
+                // --- BOTTOM PIPE ---
+                let botCapH = 24 * scale;
+                // Cap
+                ctx.fillStyle = pipeGrad;
+                ctx.fillRect(pX - 2*scale, bottomY, pW + 4*scale, botCapH);
+                ctx.strokeRect(pX - 2*scale, bottomY, pW + 4*scale, botCapH);
+                // Body
+                let bodyStart = bottomY + botCapH;
+                let bodyH = canvas.height - bodyStart - (ground.h * scale);
+                ctx.fillRect(pX, bodyStart, pW, bodyH);
+                ctx.strokeRect(pX, bodyStart, pW, bodyH + 2);
             }
         },
         
@@ -746,7 +833,7 @@
                 const groundY = canvas.height - (ground.h * scale);
                 const gapSize = this.gap * scale;
                 
-                const minPipe = 30 * scale;
+                const minPipe = 40 * scale;
                 const maxPipe = groundY - minPipe - gapSize;
 
                 const posY = Math.random() * (maxPipe - minPipe) + minPipe;
@@ -762,18 +849,15 @@
                 let p = this.position[i];
                 p.x -= this.dx * scale;
 
-                // Adjust Hitbox for Powerups
                 let effectiveRadius = bird.radius;
-                if (bird.powers.shrink > 0) effectiveRadius *= 0.6; // Smaller hitbox if shrunk
+                if (bird.powers.shrink > 0) effectiveRadius *= 0.6; 
                 
-                const birdRad = (effectiveRadius - 6) * scale;
+                const birdRad = (effectiveRadius - 4) * scale;
                 const pipeLeft = p.x;
                 const pipeRight = p.x + this.w * scale;
                 const pipeTopY = p.y;
                 const pipeBottomY = p.y + this.gap * scale;
 
-                // Collision Logic
-                // If Invincible, skip death check
                 if (bird.powers.invincible === 0) {
                     if (bird.x + birdRad > pipeLeft && bird.x - birdRad < pipeRight) {
                         if (bird.y - birdRad < pipeTopY || bird.y + birdRad > pipeBottomY) {
@@ -820,15 +904,18 @@
         highScoreEl.innerText = score.high;
         
         medalDisplay.innerHTML = "";
+        medalDisplay.style.background = "rgba(0,0,0,0.1)";
+        
         if(score.value >= 10) {
             let medal = "🥉"; 
             let color = "#cd7f32";
             if(score.value >= 20) { medal = "🥈"; color = "#c0c0c0"; } 
             if(score.value >= 30) { medal = "🥇"; color = "#ffd700"; } 
-            if(score.value >= 40) { medal = "💎"; color = "#e5e4e2"; } 
+            if(score.value >= 40) { medal = "💎"; color = "#b9f2ff"; } 
             
             medalDisplay.innerHTML = medal;
             medalDisplay.style.borderColor = color;
+            medalDisplay.style.background = "rgba(255,255,255,0.3)";
         } else {
             medalDisplay.innerHTML = "";
             medalDisplay.style.borderColor = "transparent";
@@ -837,7 +924,6 @@
         scoreHud.classList.add('hidden');
         gameOverScreen.classList.remove('hidden');
         
-        // Hide bars
         barInvincible.style.display = 'none';
         barShrink.style.display = 'none';
     }
@@ -846,8 +932,9 @@
 
     function draw() {
         bg.draw();
+        clouds.draw();
         pipes.draw();
-        powerUps.draw(); // Draw powerups
+        powerUps.draw(); 
         ground.draw();
         bird.draw();
     }
@@ -856,6 +943,7 @@
         bird.update();
         pipes.update();
         powerUps.update();
+        clouds.update();
     }
 
     function loop() {
